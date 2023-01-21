@@ -1,4 +1,4 @@
-## this repo has the code for the backend and frontend of the project
+# this repo has the code for the backend and frontend of the project
 
 ## Backend is in the folder parking-api
 
