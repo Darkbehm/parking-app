@@ -1,20 +1,16 @@
-import dotenv from "dotenv";
-import "reflect-metadata";
-import express from "express";
-import { buildSchema } from "type-graphql";
-import cookieParser from "cookie-parser";
-import { ApolloServer } from "@apollo/server";
-import { ApolloServerPluginLandingPageProductionDefault } from "@apollo/server/plugin/landingPage/default";
-import { ApolloServerPluginLandingPageGraphQLPlayground } from "@apollo/server-plugin-landing-page-graphql-playground";
-import { resolvers } from "./resolvers";
-import { connectToMongo } from "./utils/mongo";
-import { verifyJwt } from "./utils/jwt";
-import Context from "./types/context";
-import authChecker from "./utils/authChecker";
-import cors from "cors";
-import { json } from "body-parser";
-import { expressMiddleware } from "@apollo/server/express4";
-import * as jf from "joiful";
+import { ApolloServer } from '@apollo/server';
+import { ApolloServerPluginLandingPageGraphQLPlayground } from '@apollo/server-plugin-landing-page-graphql-playground';
+import { expressMiddleware } from '@apollo/server/express4';
+import { json } from 'body-parser';
+import cookieParser from 'cookie-parser';
+import cors from 'cors';
+import dotenv from 'dotenv';
+import express from 'express';
+import 'reflect-metadata';
+import { buildSchema } from 'type-graphql';
+import { resolvers } from './resolvers';
+import Context from './types/context';
+import { connectToMongo, authChecker, validate, context } from './utils/';
 
 dotenv.config();
 
@@ -22,13 +18,7 @@ const bootstrap = async () => {
   const schema = await buildSchema({
     resolvers,
     authChecker,
-    validate: (argValue) => {
-      console.log("argValue: ", argValue);
-      const { error } = jf.validate(argValue);
-      if (error) {
-        throw error;
-      }
-    },
+    validate,
   });
 
   const app = express();
@@ -37,36 +27,27 @@ const bootstrap = async () => {
 
   const server = new ApolloServer<Context>({
     schema,
-    plugins: [
-      process.env.NODE_ENV === "production"
-        ? ApolloServerPluginLandingPageProductionDefault()
-        : ApolloServerPluginLandingPageGraphQLPlayground(),
-    ],
+    includeStacktraceInErrorResponses: app.get('env') === 'development',
+    plugins: [ApolloServerPluginLandingPageGraphQLPlayground()],
   });
 
   await server.start();
 
   app.use(
-    "/graphql",
+    '/graphql',
     cors<cors.CorsRequest>(),
     json(),
     expressMiddleware(server, {
-      context: async (ctx: Context) => {
-        const context = ctx;
-        if (ctx.req.cookies.accessToken && ctx.req.cookies.accessToken !== "null") {
-          const user = verifyJwt<{ id: string }>(ctx.req.cookies.accessToken);
-          context.user = user;
-        }
-        return context;
-      },
-    })
+      context,
+    }),
   );
 
-  // app.listen on express server
+  await connectToMongo();
+
   app.listen({ port: 4000 }, () => {
-    console.log("App is listening on http://localhost:4000");
+    // eslint-disable-next-line no-console
+    console.log('Api is listening on http://localhost:4000');
   });
-  connectToMongo();
 };
 
 bootstrap();

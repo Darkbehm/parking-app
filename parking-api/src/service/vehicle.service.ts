@@ -3,7 +3,7 @@ import {
   CreateVehicleInput,
   GetVehicleInput,
   UpdateVehicleInput,
-} from "../schema/vehicle.schema";
+} from '../schema/vehicle.schema';
 
 class VehicleService {
   async createVehicle(input: CreateVehicleInput) {
@@ -22,8 +22,10 @@ class VehicleService {
     const newVehicle = {
       ...input,
       updatedAt: new Date(),
-    }
-    return VehicleModel.findOneAndUpdate(newVehicle, newVehicle, { new: true }).lean();
+    };
+    return VehicleModel.findOneAndUpdate(newVehicle, newVehicle, {
+      new: true,
+    }).lean();
   }
 }
 

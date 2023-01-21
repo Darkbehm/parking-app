@@ -1,7 +1,7 @@
-import { Arg, Ctx, Mutation, Query, Resolver } from "type-graphql";
-import { CreateUserInput, LoginInput, User } from "../schema/user.schema";
-import UserService from "../service/user.service";
-import Context from "../types/context";
+import { Arg, Authorized, Ctx, Mutation, Query, Resolver } from 'type-graphql';
+import { CreateUserInput, LoginInput, User } from '../schema/user.schema';
+import UserService from '../service/user.service';
+import Context from '../types/context';
 
 @Resolver()
 export default class UserResolver {
@@ -10,12 +10,12 @@ export default class UserResolver {
   }
 
   @Mutation(() => User)
-  createUser(@Arg("input") input: CreateUserInput) {
+  createUser(@Arg('input') input: CreateUserInput) {
     return this.userService.createUser(input);
   }
 
   @Mutation(() => String)
-  login(@Arg("input") input: LoginInput, @Ctx() context: Context) {
+  login(@Arg('input') input: LoginInput, @Ctx() context: Context) {
     return this.userService.login(input, context);
   }
 
@@ -24,27 +24,15 @@ export default class UserResolver {
     return this.userService.logout(context);
   }
 
+  @Authorized('ADMIN')
   @Query(() => User, { nullable: true })
   async me(@Ctx() context: Context) {
-    if (!context.user) {
-      return null;
-    }
-    const { id } = context.user;
-
-    if (!id) {
-      return null;
-    }
-    const user = await this.userService.findUserById(id);
-
-    if (!user) {
-      return this.userService.logout(context);
-    }
-
-    return user;
+    return this.userService.getCurrentUser(context);
   }
 
+  @Authorized()
   @Query(() => User)
-  findUserById(@Arg("id") id: string) {
+  findUserById(@Arg('id') id: string) {
     return this.userService.findUserById(id);
   }
 }

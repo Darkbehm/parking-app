@@ -1,10 +1,10 @@
-import { Request, Response } from "express";
-import { User } from "../schema/user.schema";
+import { Request, Response } from 'express';
+import { UserContext } from '../schema/user.schema';
 
 interface Context {
   req: Request;
   res: Response;
-  user: {id:string} | null;
+  user: UserContext | null;
 }
 
 export default Context;

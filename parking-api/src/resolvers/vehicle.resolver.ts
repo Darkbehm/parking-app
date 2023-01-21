@@ -1,12 +1,11 @@
-import { Arg, Authorized, Ctx, Mutation, Query, Resolver } from "type-graphql";
+import { Arg, Authorized, Mutation, Query, Resolver } from 'type-graphql';
 import {
   CreateVehicleInput,
   GetVehicleInput,
   UpdateVehicleInput,
   Vehicle,
-} from "../schema/vehicle.schema";
-import VehicleService from "../service/vehicle.service";
-import Context from "../types/context";
+} from '../schema/vehicle.schema';
+import VehicleService from '../service/vehicle.service';
 
 @Resolver()
 export default class VehicleResolver {
@@ -16,10 +15,7 @@ export default class VehicleResolver {
 
   @Authorized()
   @Mutation(() => Vehicle)
-  createVehicle(
-    @Arg("input") input: CreateVehicleInput,
-    @Ctx() context: Context
-  ) {
+  createVehicle(@Arg('input') input: CreateVehicleInput) {
     return this.vehicleService.createVehicle(input);
   }
 
@@ -29,16 +25,13 @@ export default class VehicleResolver {
   }
 
   @Query(() => Vehicle)
-  vehicle(@Arg("input") input: GetVehicleInput) {
+  vehicle(@Arg('input') input: GetVehicleInput) {
     return this.vehicleService.findSingleVehicle(input);
   }
 
   @Authorized()
   @Mutation(() => Vehicle)
-  updateVehicle(
-    @Arg("input") input: UpdateVehicleInput,
-    @Ctx() context: Context
-  ) {
+  updateVehicle(@Arg('input') input: UpdateVehicleInput) {
     return this.vehicleService.updateVehicle(input);
   }
 }
