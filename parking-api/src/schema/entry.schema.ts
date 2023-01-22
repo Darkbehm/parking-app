@@ -17,22 +17,23 @@ export class Entry extends defaultFields {
   @prop({ required: true, default: () => new Date() })
   entryDate: Date;
 
-  @Field(() => String, { description: 'The date and time of the exit' })
-  @prop({ required: false })
+  @Field(() => String, {
+    description: 'The date and time of the exit',
+    nullable: true,
+  })
+  @prop()
   exitDate?: Date;
 
-  @Field(() => Object, {
-    description: 'The ammount of time the vehicle was parked',
+  @Field(() => Number, {
+    description: 'The ammount of time the vehicle was parked,in minutes',
+    nullable: true,
   })
-  @prop({ required: false })
-  timeParked?: {
-    days: number;
-    hours: number;
-    minutes: number;
-  };
+  @prop({ required: false, default: () => 0 })
+  timeParked?: number;
 
   @Field(() => Number, {
     description: 'The amount of money the vehicle has to pay',
+    nullable: true,
   })
   @prop({ required: false, default: () => 0 })
   amountToPay?: number;
@@ -46,28 +47,23 @@ export class CreateEntryInput {
   @Field()
   plate: string;
 
-  @jf.string().required().min(4).max(10).label('Vehicle Type')
-  @Field()
-  vehicleType: string;
-
   @jf.date().required().label('Entry Date')
   @Field()
   entryDate: Date;
+}
 
-  @jf.date().label('Exit Date')
+@InputType({ description: 'get the last entry input by plate' })
+export class GetEntryInput {
+  @jf.string().required().min(4).max(10).label('Plate')
   @Field()
-  exitDate?: Date;
+  plate: string;
 }
 
 @InputType({ description: 'The exit input' })
 export class UpdateEntryInput extends updateDefaultFields {
-  @jf.string().min(4).max(10).label('Plate')
+  @jf.string().required().min(4).max(10).label('Plate')
   @Field()
-  plate?: string;
-
-  @jf.string().min(4).max(10).label('Vehicle Type')
-  @Field()
-  vehicleType?: string;
+  plate: string;
 
   @jf.date().label('Exit Date')
   @Field()

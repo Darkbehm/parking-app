@@ -5,6 +5,8 @@ import {
   UpdateVehicleInput,
 } from '../schema/vehicle.schema';
 
+import { VehicleTypeModel } from '../schema/vehicleTypes.schema';
+
 class VehicleService {
   async createVehicle(input: CreateVehicleInput) {
     return VehicleModel.create(input);
@@ -26,6 +28,12 @@ class VehicleService {
     return VehicleModel.findOneAndUpdate(newVehicle, newVehicle, {
       new: true,
     }).lean();
+  }
+
+  async findVehicleType(vehicleTypeId: string) {
+    return (
+      VehicleTypeModel.findOne({ _id: vehicleTypeId }).lean()?.name || 'default'
+    );
   }
 }
 

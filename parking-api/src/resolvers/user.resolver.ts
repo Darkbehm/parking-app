@@ -24,7 +24,7 @@ export default class UserResolver {
     return this.userService.logout(context);
   }
 
-  @Authorized('ADMIN')
+  @Authorized()
   @Query(() => User, { nullable: true })
   async me(@Ctx() context: Context) {
     return this.userService.getCurrentUser(context);

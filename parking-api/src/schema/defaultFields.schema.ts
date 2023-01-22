@@ -5,6 +5,11 @@ import * as jf from 'joiful';
   isAbstract: true,
 })
 export class defaultFields {
+  @Field(() => String, {
+    description: 'The id of the item',
+  })
+  _id: string;
+
   @Field({
     description: 'The date the item was created',
   })
@@ -33,8 +38,4 @@ export class updateDefaultFields {
     .required()
   @Field()
   _id: string;
-
-  @jf.boolean().label('isActive')
-  @Field()
-  isActive?: boolean;
 }
