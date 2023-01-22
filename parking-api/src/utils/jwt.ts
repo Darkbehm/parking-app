@@ -1,10 +1,11 @@
-import jwt from "jsonwebtoken";
-import dotenv from "dotenv";
+import jwt from 'jsonwebtoken';
+import dotenv from 'dotenv';
+import { UserContext } from '../schema/user.schema';
 dotenv.config();
 
 const secret = process.env.JWT_SECRET;
 
-export function signJwt(object: Object, options?: jwt.SignOptions | undefined) {
+export function signJwt(object: UserContext) {
   return jwt.sign(object, secret);
 }
 

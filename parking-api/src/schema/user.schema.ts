@@ -5,16 +5,16 @@ import {
   ReturnModelType,
   queryMethod,
   index,
-} from "@typegoose/typegoose";
-import { AsQueryMethod } from "@typegoose/typegoose/lib/types";
-import bcrypt from "bcrypt";
-import { Field, InputType, ObjectType } from "type-graphql";
-import * as jf from "joiful";
-import { defaultFields } from "./defaultFields.schema";
+} from '@typegoose/typegoose';
+import { AsQueryMethod } from '@typegoose/typegoose/lib/types';
+import bcrypt from 'bcrypt';
+import { Field, InputType, ObjectType } from 'type-graphql';
+import * as jf from 'joiful';
+import { defaultFields, deleteDefaultFields } from './defaultFields.schema';
 
 function findByEmail(
   this: ReturnModelType<typeof User, QueryHelpers>,
-  email: User["email"]
+  email: User['email'],
 ) {
   return this.findOne({ email });
 }
@@ -23,9 +23,9 @@ interface QueryHelpers {
   findByEmail: AsQueryMethod<typeof findByEmail>;
 }
 
-@pre<User>("save", async function () {
+@pre<User>('save', async function () {
   // Check that the password is being modified
-  if (!this.isModified("password")) {
+  if (!this.isModified('password')) {
     return;
   }
 
@@ -35,20 +35,22 @@ interface QueryHelpers {
 
   this.password = hash;
 })
-@index({ email: 1 })
+@index({ email: 1 }, { unique: true })
 @queryMethod(findByEmail)
-@ObjectType()
+@ObjectType({
+  description: 'The user model',
+})
 export class User extends defaultFields {
   @Field(() => String, {
-    description: "The name of the user",
+    description: 'The name of the user',
   })
   @prop({ required: true })
   name: string;
 
-  @Field(() => String,{
-    description: "The email of the user",
+  @Field(() => String, {
+    description: 'The email of the user',
   })
-  @prop({ required: true })
+  @prop({ required: true, unique: true })
   email: string;
 
   @prop({ required: true })
@@ -63,11 +65,11 @@ export const UserModel = getModelForClass<typeof User, QueryHelpers>(User);
 
 @InputType()
 export class CreateUserInput {
-  @jf.string().required().min(5).max(128).label("Name")
+  @jf.string().required().min(5).max(128).label('Name')
   @Field(() => String)
   name: string;
 
-  @jf.string().email().required().label("Email")
+  @jf.string().email().required().label('Email')
   @Field(() => String)
   email: string;
 
@@ -77,14 +79,14 @@ export class CreateUserInput {
     .min(8)
     .max(32)
     .pattern(/^(?=.*[a-z])(?=.*[A-Z])(?=.*[0-9])(?=.*[!@#\$%\^&\*])/)
-    .label("Password")
+    .label('Password')
   @Field(() => String)
   password: string;
 }
 
 @InputType()
 export class LoginInput {
-  @jf.string().email().required().label("Email")
+  @jf.string().email().required().label('Email')
   @Field(() => String)
   email: string;
 
@@ -95,23 +97,37 @@ export class LoginInput {
 
 @InputType()
 export class UpdateUserInput {
-  @jf.string().required().min(5).max(128).label("Name")
+  @jf.string().required().min(5).max(128).label('Name')
   @Field(() => String)
   name: string;
 
-  @jf.string().email().required().label("Email")
+  @jf.string().email().required().label('Email')
   @Field(() => String)
   email: string;
 
-  @jf.string().required().min(8).max(32).label("Password")
+  @jf.string().required().min(8).max(32).label('Password')
   @Field(() => String)
   password: string;
 
-  @jf.boolean().required().label("Is Active")
+  @jf.boolean().required().label('Is Active')
   @Field(() => Boolean)
   isActive: boolean;
 
-  @jf.boolean().label("Is Admin")
+  @jf.boolean().label('Is Admin')
   @Field(() => Boolean)
   isAdmin?: boolean;
+}
+
+@InputType({
+  description: 'The input for deleting a user',
+})
+export class DeleteUserInput extends deleteDefaultFields {
+  @jf.string().email().label('Email')
+  @Field(() => String)
+  email?: string;
+}
+
+export interface UserContext {
+  id: string;
+  role: string;
 }

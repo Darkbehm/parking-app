@@ -1,4 +1,4 @@
-import mongoose from "mongoose";
+import mongoose from 'mongoose';
 
 export async function connectToMongo() {
   try {
@@ -10,8 +10,11 @@ export async function connectToMongo() {
 
     mongoose.set('strictQuery', false);
     await mongoose.connect(uri);
-    console.log("Connected to Database");
+
+    // eslint-disable-next-line no-console
+    console.log('Connected to Database');
   } catch (error) {
+    // eslint-disable-next-line no-console
     console.error(error);
     process.exit(1);
   }

@@ -1,20 +1,25 @@
-import { getModelForClass, index, prop, Ref } from "@typegoose/typegoose";
-import { Field, InputType, ObjectType } from "type-graphql";
-import * as jf from "joiful";
-import { VehicleType } from "./vehicleTypes.schema";
-import { defaultFields, updateDefaultFields } from "./defaultFields.schema";
+import { getModelForClass, index, prop, Ref } from '@typegoose/typegoose';
+import { Field, InputType, ObjectType } from 'type-graphql';
+import * as jf from 'joiful';
+import { VehicleType } from './vehicleTypes.schema';
+import {
+  defaultFields,
+  deleteDefaultFields,
+  updateDefaultFields,
+} from './defaultFields.schema';
 
-@ObjectType({ description: "Vehicle model" })
-@index({ plate: 1 })
+@ObjectType({ description: 'Vehicle model' })
+@index({ plate: 1 }, { unique: true })
 export class Vehicle extends defaultFields {
-  @Field(() => String,
-    { description: "The plate of the vehicle, must be unique" })
+  @Field(() => String, {
+    description: 'The plate of the vehicle, must be unique',
+  })
   @prop({ required: true, unique: true })
   plate: string;
 
   @Field(() => String, {
     description:
-      "The ID of the type, you can check the types available with the query getTypes",
+      'The ID of the type, you can check the types available with the query getTypes',
   })
   @prop({ required: true, ref: () => VehicleType })
   vehicleType: Ref<VehicleType>;
@@ -23,7 +28,7 @@ export const VehicleModel = getModelForClass<typeof Vehicle>(Vehicle);
 
 @InputType()
 export class CreateVehicleInput {
-  @jf.string().required().min(4).max(10).label("Plate")
+  @jf.string().required().min(4).max(10).label('Plate')
   @Field()
   plate: string;
 
@@ -32,14 +37,14 @@ export class CreateVehicleInput {
     .string()
     .required()
     .regex(/^[0-9a-fA-F]{24}$/)
-    .label("vehicleType")
+    .label('vehicleType')
   @Field()
   vehicleType: string;
 }
 
 @InputType()
 export class GetVehicleInput {
-  @jf.string().min(4).max(10).label("Plate")
+  @jf.string().min(4).max(10).label('Plate')
   @Field()
   plate?: string;
 
@@ -47,14 +52,14 @@ export class GetVehicleInput {
   @jf
     .string()
     .regex(/^[0-9a-fA-F]{24}$/)
-    .label("id")
+    .label('id')
   @Field()
   _id?: string;
 }
 
 @InputType()
 export class UpdateVehicleInput extends updateDefaultFields {
-  @jf.string().min(4).max(10).required().label("Plate")
+  @jf.string().min(4).max(10).required().label('Plate')
   @Field()
   plate: string;
 
@@ -63,7 +68,16 @@ export class UpdateVehicleInput extends updateDefaultFields {
     .string()
     .required()
     .regex(/^[0-9a-fA-F]{24}$/)
-    .label("vehicleType")
+    .label('vehicleType')
   @Field()
   vehicleType: string;
+}
+
+@InputType({
+  description: 'The input for deleting a vehicle',
+})
+export class DeleteVehicleInput extends deleteDefaultFields {
+  @jf.string().min(4).max(10).label('Plate')
+  @Field()
+  plate?: string;
 }
