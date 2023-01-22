@@ -73,6 +73,25 @@ class EntryService {
       new: true,
     }).lean();
   }
+
+  async deleteEntry(_id: string) {
+    const entry = await EntryModel.findOne({ _id, isActive: true }).lean();
+    if (!entry) {
+      throw new GraphQLError('Entry not found', {
+        extensions: {
+          code: 'ENTRY_NOT_FOUND',
+        },
+      });
+    }
+    const deletedEntry = {
+      ...entry,
+      updatedAt: new Date(),
+      isActive: false,
+    };
+    return EntryModel.findOneAndUpdate
+      .bind(EntryModel)({ _id }, deletedEntry, { new: true })
+      .lean();
+  }
 }
 
 export default EntryService;

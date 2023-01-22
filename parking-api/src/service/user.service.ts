@@ -3,11 +3,13 @@ import bcrypt from 'bcrypt';
 import {
   CreateUserInput,
   LoginInput,
+  UpdateUserInput,
   UserContext,
   UserModel,
 } from '../schema/user.schema';
 import Context from '../types/context';
 import { signJwt } from '../utils/jwt';
+import { GraphQLError } from 'graphql';
 
 class UserService {
   async createUser(input: CreateUserInput) {
@@ -19,7 +21,7 @@ class UserService {
 
     const user = await UserModel.find().findByEmail(input.email).lean();
 
-    if (!user) {
+    if (!user || !user.isActive) {
       throw new ApolloError(e);
     }
 
@@ -71,13 +73,50 @@ class UserService {
     if (!id) {
       return null;
     }
-    const user = await UserModel.findById(id).lean();
+    const user = await UserModel.findOne({
+      _id: id,
+      isActive: true,
+    }).lean();
 
     if (!user) {
       return this.logout(context);
     }
 
     return user;
+  }
+
+  async updateUser(id: string, input: UpdateUserInput) {
+    return UserModel.findByIdAndUpdate
+      .bind(UserModel)(id, input, { new: true })
+      .lean();
+  }
+
+  async deleteUser(id: string) {
+    const user = await UserModel.findOne({ _id: id, isActive: true }).lean();
+
+    if (!user) {
+      throw new GraphQLError('User not found', {
+        extensions: {
+          code: 'USER_NOT_FOUND',
+        },
+      });
+    }
+
+    const deletedUser = {
+      ...user,
+      updatedAt: new Date(),
+      isActive: false,
+    };
+
+    return UserModel.findOneAndUpdate({ _id: id }, deletedUser, {
+      new: true,
+    }).lean();
+  }
+
+  async findUsers() {
+    return UserModel.find({
+      isActive: true,
+    }).lean();
   }
 }
 

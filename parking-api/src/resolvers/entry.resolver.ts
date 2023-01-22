@@ -34,4 +34,10 @@ export default class EntryResolver {
   updateEntry(@Arg('input') input: UpdateEntryInput) {
     return this.entryService.updateEntry(input);
   }
+
+  @Authorized()
+  @Mutation(() => Entry)
+  deleteEntry(@Arg('entryId') entryId: string) {
+    return this.entryService.deleteEntry(entryId);
+  }
 }

@@ -39,3 +39,16 @@ export class updateDefaultFields {
   @Field()
   _id: string;
 }
+
+@InputType({
+  description: 'The input for deleting an item',
+})
+export class deleteDefaultFields {
+  @jf
+    .string()
+    .regex(/^[0-9a-fA-F]{24}/)
+    .label('_id')
+    .required()
+  @Field()
+  _id: string;
+}

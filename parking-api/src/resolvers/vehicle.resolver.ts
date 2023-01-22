@@ -34,4 +34,10 @@ export default class VehicleResolver {
   updateVehicle(@Arg('input') input: UpdateVehicleInput) {
     return this.vehicleService.updateVehicle(input);
   }
+
+  @Authorized()
+  @Mutation(() => Vehicle)
+  deleteVehicle(@Arg('vehicleId') vehicleId: string) {
+    return this.vehicleService.deleteVehicle(vehicleId);
+  }
 }

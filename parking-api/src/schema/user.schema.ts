@@ -10,7 +10,7 @@ import { AsQueryMethod } from '@typegoose/typegoose/lib/types';
 import bcrypt from 'bcrypt';
 import { Field, InputType, ObjectType } from 'type-graphql';
 import * as jf from 'joiful';
-import { defaultFields } from './defaultFields.schema';
+import { defaultFields, deleteDefaultFields } from './defaultFields.schema';
 
 function findByEmail(
   this: ReturnModelType<typeof User, QueryHelpers>,
@@ -116,6 +116,15 @@ export class UpdateUserInput {
   @jf.boolean().label('Is Admin')
   @Field(() => Boolean)
   isAdmin?: boolean;
+}
+
+@InputType({
+  description: 'The input for deleting a user',
+})
+export class DeleteUserInput extends deleteDefaultFields {
+  @jf.string().email().label('Email')
+  @Field(() => String)
+  email?: string;
 }
 
 export interface UserContext {

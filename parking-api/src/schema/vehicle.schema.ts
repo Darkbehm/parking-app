@@ -2,7 +2,11 @@ import { getModelForClass, index, prop, Ref } from '@typegoose/typegoose';
 import { Field, InputType, ObjectType } from 'type-graphql';
 import * as jf from 'joiful';
 import { VehicleType } from './vehicleTypes.schema';
-import { defaultFields, updateDefaultFields } from './defaultFields.schema';
+import {
+  defaultFields,
+  deleteDefaultFields,
+  updateDefaultFields,
+} from './defaultFields.schema';
 
 @ObjectType({ description: 'Vehicle model' })
 @index({ plate: 1 }, { unique: true })
@@ -67,4 +71,13 @@ export class UpdateVehicleInput extends updateDefaultFields {
     .label('vehicleType')
   @Field()
   vehicleType: string;
+}
+
+@InputType({
+  description: 'The input for deleting a vehicle',
+})
+export class DeleteVehicleInput extends deleteDefaultFields {
+  @jf.string().min(4).max(10).label('Plate')
+  @Field()
+  plate?: string;
 }

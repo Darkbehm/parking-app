@@ -1,5 +1,10 @@
 import { Arg, Authorized, Ctx, Mutation, Query, Resolver } from 'type-graphql';
-import { CreateUserInput, LoginInput, User } from '../schema/user.schema';
+import {
+  CreateUserInput,
+  LoginInput,
+  User,
+  UpdateUserInput,
+} from '../schema/user.schema';
 import UserService from '../service/user.service';
 import Context from '../types/context';
 
@@ -34,5 +39,23 @@ export default class UserResolver {
   @Query(() => User)
   findUserById(@Arg('id') id: string) {
     return this.userService.findUserById(id);
+  }
+
+  @Authorized('ADMIN')
+  @Query(() => [User])
+  users() {
+    return this.userService.findUsers();
+  }
+
+  @Authorized('ADMIN')
+  @Mutation(() => User)
+  updateUser(@Arg('id') id: string, @Arg('input') input: UpdateUserInput) {
+    return this.userService.updateUser(id, input);
+  }
+
+  @Authorized('ADMIN')
+  @Mutation(() => User)
+  deleteUser(@Arg('id') id: string) {
+    return this.userService.deleteUser(id);
   }
 }
