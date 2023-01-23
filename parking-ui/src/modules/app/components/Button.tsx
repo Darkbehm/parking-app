@@ -25,7 +25,7 @@ const colors = {
 export default ({ children, type, ...props }: Props): ReactElement => {
   return (
     <button
-      className={`transition ease-in-out delay-15 hover:scale-125 duration-200 bg-gradient-to-r 
+      className={`h-12 transition ease-in-out delay-15 hover:scale-125 duration-200 bg-gradient-to-r 
       ${colors[type ?? "normal"].default}
       text-neutral-50 font-medium px-4 py-2 rounded-md shadow-md
       ${colors[type ?? "normal"].active}`}

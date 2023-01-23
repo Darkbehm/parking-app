@@ -5,7 +5,10 @@ export const GET_VEHICLES = gql`
     vehicles {
       _id
       plate
-      vehicleType
+      vehicleType {
+        _id
+        type
+      }
     }
   }
 `;

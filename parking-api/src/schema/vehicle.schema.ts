@@ -81,3 +81,24 @@ export class DeleteVehicleInput extends deleteDefaultFields {
   @Field()
   plate?: string;
 }
+
+@ObjectType()
+export class VehicleQueryResponse {
+  @Field()
+  _id: string;
+
+  @Field()
+  plate: string;
+
+  @Field()
+  createdAt: Date;
+
+  @Field()
+  updatedAt: Date;
+
+  @Field(() => VehicleType)
+  vehicleType: VehicleType;
+
+  @Field()
+  isActive: boolean;
+}

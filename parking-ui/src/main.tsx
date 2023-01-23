@@ -9,9 +9,9 @@ import {
 } from "react-router-dom";
 import Root from "./modules/app/components/Root";
 import { ErrorPage } from "./error-page";
-import { Login } from "./modules/app/components/login";
+import { Login } from "./modules/app/pages/Login";
 import { ProtectedRoute } from "./modules/app/components/ProtectedRoute";
-import { Home } from "./modules/app/pages/Home";
+import { Dashboard } from "./modules/app/pages/Dashboard";
 
 const router = createBrowserRouter(
   createRoutesFromElements(
@@ -26,10 +26,10 @@ const router = createBrowserRouter(
           element={<Login />}
         />
         <Route
-          path="home"
+          path="dashboard"
           element={
             <ProtectedRoute>
-              <Home />
+              <Dashboard />
             </ProtectedRoute>
           }
         />

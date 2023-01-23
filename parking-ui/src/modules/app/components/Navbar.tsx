@@ -9,7 +9,7 @@ export const Navbar: FC<{ isLogged: boolean }> = ({
 }) => {
   const removeCookies = useCookies()[2];
   return (
-    <header>
+    <header className="z-10">
       <nav className="bg-gradient-to-br from-sky-500 to-teal-200 shadow-xl p-4 grid grid-cols-2 sm:px-16">
         <Link
           to="/"

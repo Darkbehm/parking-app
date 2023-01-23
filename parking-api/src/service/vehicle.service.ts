@@ -14,9 +14,13 @@ class VehicleService {
   }
 
   async findVehicles() {
-    return VehicleModel.find({
+    const vehicles = await VehicleModel.find({
       isActive: true,
-    }).lean();
+    })
+      .populate('vehicleType')
+      .lean();
+
+    return vehicles;
   }
 
   async findSingleVehicle(input: GetVehicleInput) {

@@ -4,6 +4,7 @@ import {
   GetVehicleInput,
   UpdateVehicleInput,
   Vehicle,
+  VehicleQueryResponse,
 } from '../schema/vehicle.schema';
 import VehicleService from '../service/vehicle.service';
 
@@ -19,7 +20,7 @@ export default class VehicleResolver {
     return this.vehicleService.createVehicle(input);
   }
 
-  @Query(() => [Vehicle])
+  @Query(() => [VehicleQueryResponse])
   vehicles() {
     return this.vehicleService.findVehicles();
   }
