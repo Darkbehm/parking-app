@@ -5,9 +5,10 @@ import validator from "validator";
 import { LOGIN } from "../services/mutations/login";
 import Button from "./Button";
 import { useState, useEffect } from "react";
-import { Navigate } from "react-router-dom";
+import { Navigate, useNavigate } from "react-router-dom";
 
 export const Login = () => {
+  const navigate = useNavigate();
   const [cookie, setCookie] = useCookies(["accessToken"]);
   const [email, setEmail] = useState("");
   const [password, setPassword] = useState("");
@@ -73,7 +74,7 @@ export const Login = () => {
     <>
       {cookie.accessToken && cookie.accessToken !== "undefined" && (
         <Navigate
-          to="/"
+          to="/home"
           replace
         />
       )}
@@ -160,10 +161,7 @@ export const Login = () => {
                 type={"normal"}
                 onClick={(event) => {
                   event.preventDefault();
-                  <Navigate
-                    to="/register"
-                    replace
-                  />;
+                  return navigate("/register");
                 }}
               >
                 Register

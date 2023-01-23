@@ -1,33 +1,28 @@
 import { FC } from "react";
 import { useCookies } from "react-cookie";
-import { Link, Navigate } from "react-router-dom";
+import { Link } from "react-router-dom";
 
-export const Navbar: FC = () => {
-  const [cookies, _, removeCookies] = useCookies();
-
-  const isLogged = cookies.accessToken && cookies.accessToken !== "undefined";
-
+export const Navbar: FC<{ isLogged: boolean }> = ({
+  isLogged,
+}: {
+  isLogged: boolean;
+}) => {
+  const removeCookies = useCookies()[2];
   return (
     <header>
       <nav className="bg-gradient-to-br from-sky-500 to-teal-200 shadow-xl p-4 grid grid-cols-2 sm:px-16">
-        <button
+        <Link
+          to="/"
           className="text-xl flex text-sky-900 transition-all hover:text-white font-extrabold"
-          onClick={() => {
-            return (
-              <Navigate
-                to="/"
-                replace
-              />
-            );
-          }}
         >
           Parcking App
-        </button>
+        </Link>
         <div className="flex w-full justify-end gap-4 md:gap-16">
           {isLogged ? (
             <div className="block text-sky-700 font-semibold rounded md:border-0 hover:text-white ">
               <button
                 onClick={() => {
+                  console.log("logout");
                   removeCookies("accessToken");
                 }}
               >
