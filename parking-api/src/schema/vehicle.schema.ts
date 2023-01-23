@@ -28,7 +28,7 @@ export const VehicleModel = getModelForClass<typeof Vehicle>(Vehicle);
 
 @InputType()
 export class CreateVehicleInput {
-  @jf.string().required().min(4).max(10).label('Plate')
+  @jf.string().min(8).max(8).label('Plate')
   @Field()
   plate: string;
 
@@ -44,7 +44,7 @@ export class CreateVehicleInput {
 
 @InputType()
 export class GetVehicleInput {
-  @jf.string().min(4).max(10).label('Plate')
+  @jf.string().min(8).max(8).label('Plate')
   @Field()
   plate?: string;
 
@@ -59,7 +59,7 @@ export class GetVehicleInput {
 
 @InputType()
 export class UpdateVehicleInput extends updateDefaultFields {
-  @jf.string().min(4).max(10).required().label('Plate')
+  @jf.string().min(8).max(8).label('Plate')
   @Field()
   plate: string;
 
@@ -77,7 +77,7 @@ export class UpdateVehicleInput extends updateDefaultFields {
   description: 'The input for deleting a vehicle',
 })
 export class DeleteVehicleInput extends deleteDefaultFields {
-  @jf.string().min(4).max(10).label('Plate')
+  @jf.string().min(8).max(8).label('Plate')
   @Field()
   plate?: string;
 }

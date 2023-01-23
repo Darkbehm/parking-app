@@ -35,9 +35,15 @@ class VehicleService {
       ...input,
       updatedAt: new Date(),
     };
-    return VehicleModel.findOneAndUpdate(newVehicle, newVehicle, {
-      new: true,
-    }).lean();
+    const updated = await VehicleModel.findOneAndUpdate(
+      { _id: input._id },
+      newVehicle,
+      {
+        new: true,
+      },
+    ).lean();
+
+    return updated;
   }
 
   async findVehicleType(vehicleTypeId: string) {

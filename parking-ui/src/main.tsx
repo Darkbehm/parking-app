@@ -7,11 +7,11 @@ import {
   RouterProvider,
   Route,
 } from "react-router-dom";
-import Root from "./modules/app/components/Root";
-import { ErrorPage } from "./error-page";
-import { Login } from "./modules/app/pages/Login";
-import { ProtectedRoute } from "./modules/app/components/ProtectedRoute";
-import { Dashboard } from "./modules/app/pages/Dashboard";
+import Root from "./app/components/Root";
+import { ErrorPage } from "./app/pages/error-page";
+import { Login } from "./app/pages/Login";
+import { ProtectedRoute } from "./app/components/ProtectedRoute";
+import { Dashboard } from "./app/pages/Dashboard";
 
 const router = createBrowserRouter(
   createRoutesFromElements(
