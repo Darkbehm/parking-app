@@ -35,7 +35,7 @@ export class Entry extends defaultFields {
     description: 'The amount of money the vehicle has to pay',
     nullable: true,
   })
-  @prop({ required: false, default: () => 0 })
+  @prop({ required: false })
   amountToPay?: number;
 }
 
@@ -43,7 +43,7 @@ export const EntryModel = getModelForClass<typeof Entry>(Entry);
 
 @InputType({ description: 'The entry input' })
 export class CreateEntryInput {
-  @jf.string().required().min(4).max(10).label('Plate')
+  @jf.string().min(8).max(8).label('Plate')
   @Field()
   plate: string;
 
@@ -54,14 +54,14 @@ export class CreateEntryInput {
 
 @InputType({ description: 'get the last entry input by plate' })
 export class GetEntryInput {
-  @jf.string().required().min(4).max(10).label('Plate')
+  @jf.string().min(8).max(8).label('Plate')
   @Field()
   plate: string;
 }
 
 @InputType({ description: 'The exit input' })
 export class UpdateEntryInput extends updateDefaultFields {
-  @jf.string().required().min(4).max(10).label('Plate')
+  @jf.string().min(8).max(8).label('Plate')
   @Field()
   plate: string;
 

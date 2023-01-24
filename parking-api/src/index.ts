@@ -34,9 +34,16 @@ const bootstrap = async () => {
   await server.start();
 
   app.use(
+    cors({
+      origin: true,
+      credentials: true,
+    }),
+  );
+
+  app.use(json());
+
+  app.use(
     '/graphql',
-    cors<cors.CorsRequest>(),
-    json(),
     expressMiddleware(server, {
       context,
     }),

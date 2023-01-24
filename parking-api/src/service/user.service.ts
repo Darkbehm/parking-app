@@ -12,8 +12,16 @@ import { signJwt } from '../utils/jwt';
 import { GraphQLError } from 'graphql';
 
 class UserService {
-  async createUser(input: CreateUserInput) {
-    return UserModel.create(input);
+  async createUser(input: CreateUserInput, context: Context) {
+    return UserModel.create(input).then((user) => {
+      return this.login(
+        {
+          email: user.email,
+          password: input.password,
+        },
+        context,
+      );
+    });
   }
 
   async login(input: LoginInput, context: Context) {

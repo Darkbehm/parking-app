@@ -14,9 +14,13 @@ class VehicleService {
   }
 
   async findVehicles() {
-    return VehicleModel.find({
+    const vehicles = await VehicleModel.find({
       isActive: true,
-    }).lean();
+    })
+      .populate('vehicleType')
+      .lean();
+
+    return vehicles;
   }
 
   async findSingleVehicle(input: GetVehicleInput) {
@@ -31,15 +35,25 @@ class VehicleService {
       ...input,
       updatedAt: new Date(),
     };
-    return VehicleModel.findOneAndUpdate(newVehicle, newVehicle, {
-      new: true,
-    }).lean();
+    const updated = await VehicleModel.findOneAndUpdate(
+      { _id: input._id },
+      newVehicle,
+      {
+        new: true,
+      },
+    ).lean();
+
+    return updated;
   }
 
   async findVehicleType(vehicleTypeId: string) {
     return (
-      VehicleTypeModel.findOne({ _id: vehicleTypeId, isActive: true }).lean()
-        ?.name || 'default'
+      (
+        await VehicleTypeModel.findOne({
+          _id: vehicleTypeId,
+          isActive: true,
+        }).lean()
+      )?.type || 'default'
     );
   }
 
