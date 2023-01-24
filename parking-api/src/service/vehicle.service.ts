@@ -47,14 +47,12 @@ class VehicleService {
   }
 
   async findVehicleType(vehicleTypeId: string) {
-    return (
-      (
-        await VehicleTypeModel.findOne({
-          _id: vehicleTypeId,
-          isActive: true,
-        }).lean()
-      )?.type || 'default'
-    );
+    const type = await VehicleTypeModel.findOne({
+      _id: vehicleTypeId,
+      isActive: true,
+    }).lean();
+
+    return type?.type || 'normal';
   }
 
   async deleteVehicle(vehicleId: string) {
