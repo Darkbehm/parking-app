@@ -51,9 +51,9 @@ const bootstrap = async () => {
 
   await connectToMongo();
 
-  app.listen({ port: 4000 }, () => {
+  app.listen({ port: process.env.PORT || 4000 }, () => {
     // eslint-disable-next-line no-console
-    console.log('Api is listening on http://localhost:4000');
+    console.log(`Api is listening on ${process.env.PORT}`);
   });
 };
 
