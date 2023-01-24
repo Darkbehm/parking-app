@@ -1,7 +1,7 @@
 import { useApolloClient, useMutation, useQuery } from '@apollo/client';
 import { AutoComplete, DatePicker, Form, Modal } from 'antd';
 import { CREATE_ENTRY, CREATE_EXIT } from '../../services/mutations';
-import { useState } from 'react';
+import { useState, useEffect } from 'react';
 import { GET_ENTRIES, GET_VEHICLES } from '../../services/queries';
 import Button from '../Button';
 import dayjs from 'dayjs';
@@ -89,8 +89,15 @@ export const EntryModal = ({
   };
 
   const handleCloseModal = () => {
+    setError(null);
     closeModal();
   };
+
+  useEffect(() => {
+    if (mutationError) {
+      setError(mutationError.message);
+    }
+  }, [mutationError]);
 
   return (
     <Modal
@@ -237,9 +244,7 @@ export const EntryModal = ({
           </Button>
         </div>
       </Form>
-      {(error || mutationError) && (
-        <p className="text-red-500">{error ?? mutationError?.message}</p>
-      )}
+      {error && <p className="text-red-500">{error}</p>}
     </Modal>
   );
 };
