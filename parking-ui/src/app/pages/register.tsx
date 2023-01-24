@@ -2,19 +2,21 @@ import { useMutation } from '@apollo/client';
 import { useCookies } from 'react-cookie';
 import validator from 'validator';
 
-import { LOGIN } from '../services/mutations/login';
+import { CREATE_USER } from '../services/mutations/createUser';
 import Button from '../components/Button';
 import { useState, useEffect } from 'react';
 import { Navigate, useNavigate } from 'react-router-dom';
 
-export const Login = () => {
+export const Register = () => {
   const navigate = useNavigate();
   const [cookie, setCookie] = useCookies(['accessToken']);
   const [email, setEmail] = useState('');
   const [password, setPassword] = useState('');
-  const [makeLogin, { error, loading }] = useMutation(LOGIN, {
+  const [name, setName] = useState('');
+  const [makeLogin, { error, loading }] = useMutation(CREATE_USER, {
     variables: {
       input: {
+        name,
         email,
         password,
       },
@@ -56,7 +58,7 @@ export const Login = () => {
     const response = await makeLogin();
 
     if (response.data) {
-      setCookie('accessToken', response.data.login, {
+      setCookie('accessToken', response.data.createUser, {
         path: '/',
         maxAge: 3600,
       });
@@ -85,15 +87,34 @@ export const Login = () => {
         {!loading && (
           <div className="flex flex-col space-y-4 sm:space-y-8 justify-center items-center mb-16">
             <h1 className="text-4xl p-1 text-center font-black bg-gradient-to-r from-sky-500 to-teal-300 text-transparent bg-clip-text pointer-events-none select-none py-8 sm:py-8">
-              Login
+              Registro
             </h1>
             <form className="flex flex-col gap-4 min-w-[310px] md:w-1/2 lg:px-24">
+              <div className="flex flex-col">
+                <label
+                  htmlFor="Nombre"
+                  className="font-semibold bg-gradient-to-r from-sky-500 to-teal-300 text-transparent bg-clip-text select-none text-xl"
+                >
+                  Nombre:
+                </label>
+                <input
+                  className="border-2 border-gray-300 p-2 rounded-md shadow-md focus:outline-sky-500 focus:shadow-lg hover:shadow-lg hover:outline-sky-500 "
+                  type="Nombre"
+                  name="Nombre"
+                  id="Nombre"
+                  placeholder="Nombre"
+                  onChange={(e) => {
+                    setName(e.target.value);
+                    validateInputs();
+                  }}
+                />
+              </div>
               <div className="flex flex-col">
                 <label
                   htmlFor="email"
                   className="font-semibold bg-gradient-to-r from-sky-500 to-teal-300 text-transparent bg-clip-text select-none text-xl"
                 >
-                  Email:
+                  Correo Electronico:
                 </label>
                 <input
                   className="border-2 border-gray-300 p-2 rounded-md shadow-md focus:outline-sky-500 focus:shadow-lg hover:shadow-lg hover:outline-sky-500 "
@@ -112,7 +133,7 @@ export const Login = () => {
                   htmlFor="password"
                   className="font-semibold bg-gradient-to-r from-sky-500 to-teal-300 text-transparent bg-clip-text select-none text-xl"
                 >
-                  Password:
+                  Contraseña:
                 </label>
                 <input
                   className="gap-8 border-2 border-gray-300 p-2 rounded-md shadow-md focus:outline-sky-500 focus:shadow-lg hover:shadow-lg hover:outline-sky-500 "
@@ -149,18 +170,18 @@ export const Login = () => {
                   handleSubmit();
                 }}
               >
-                Login
+                Registrarse
               </Button>
               <div className="text-center flex flex-col gap-2">
-                <span className="text-gray-500">Don't have an account?</span>
+                <span className="text-gray-500">Have an account?</span>
                 <Button
                   styleButton={'normal'}
                   onClick={(event) => {
                     event.preventDefault();
-                    return navigate('/register');
+                    return navigate('/login');
                   }}
                 >
-                  Register
+                  Login
                 </Button>
               </div>
             </div>

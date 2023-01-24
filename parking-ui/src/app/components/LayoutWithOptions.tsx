@@ -1,20 +1,24 @@
-import { Layout, Menu } from "antd";
-import Sider from "antd/es/layout/Sider";
-import { LayoutContent } from "./LayoutContent";
-import { useState } from "react";
+import { Layout, Menu } from 'antd';
+import Sider from 'antd/es/layout/Sider';
+import { LayoutContent } from './LayoutContent';
+import { useState } from 'react';
 import {
   dashboardOptions,
   dashboardKeysType,
   dashboardOptionsType,
-} from "../utils/dashboardOptions";
+} from '../utils/dashboardOptions';
 
-export const LayoutWithOptions = ({ role }: { role: dashboardOptionsType["role"] }) => {
+export const LayoutWithOptions = ({
+  role,
+}: {
+  role: dashboardOptionsType['role'];
+}) => {
   const options = getOptionsByRole(role);
   const [selectedOption, setSelectedOption] = useState<dashboardKeysType>(
-    options[0].key
+    options[0].key,
   );
   return (
-    <Layout >
+    <Layout>
       <Sider
         theme="light"
         className="py-16 z-50"
@@ -39,8 +43,8 @@ export const LayoutWithOptions = ({ role }: { role: dashboardOptionsType["role"]
   );
 };
 
-const getOptionsByRole = (role: dashboardOptionsType["role"]) => {
+const getOptionsByRole = (role: dashboardOptionsType['role']) => {
   return dashboardOptions.filter(
-    (option) => option.role === "any" || option.role === role
+    (option) => option.role === 'any' || option.role === role,
   );
 };

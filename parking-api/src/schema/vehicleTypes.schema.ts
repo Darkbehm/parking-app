@@ -74,8 +74,4 @@ export class UpdateVehicleTypeInput extends updateDefaultFields {
 @InputType({
   description: 'The input to delete a vehicle type',
 })
-export class DeleteVehicleTypeInput extends deleteDefaultFields {
-  @jf.string().min(4).max(10).label('Type')
-  @Field()
-  type?: string;
-}
+export class DeleteVehicleTypeInput extends deleteDefaultFields {}

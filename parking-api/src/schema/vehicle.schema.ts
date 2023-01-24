@@ -96,8 +96,8 @@ export class VehicleQueryResponse {
   @Field()
   updatedAt: Date;
 
-  @Field(() => VehicleType)
-  vehicleType: VehicleType;
+  @Field(() => VehicleType, { nullable: true })
+  vehicleType?: VehicleType;
 
   @Field()
   isActive: boolean;

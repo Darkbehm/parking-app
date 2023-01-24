@@ -1,9 +1,34 @@
 import { useApolloClient, useMutation } from '@apollo/client';
 import Modal from 'antd/es/modal/Modal';
-import { GET_VEHICLES } from '../../services/queries';
 import { useState, useEffect } from 'react';
-import { DELETE_VEHICLE } from '../../services/mutations';
+import {
+  DELETE_ENTRY,
+  DELETE_VEHICLE,
+  DELETE_VEHICLE_TYPE,
+} from '../../services/mutations';
 import Button from '../Button';
+import { dashboardKeysType } from 'app/utils/dashboardOptions';
+import { getQuery } from '../LayoutContent';
+
+const getMutation = (selectedOption: dashboardKeysType) => {
+  const mutations = {
+    vehicles: DELETE_VEHICLE,
+    parking: DELETE_ENTRY,
+    users: DELETE_VEHICLE,
+    vehicleTypes: DELETE_VEHICLE_TYPE,
+  };
+  return mutations[selectedOption];
+};
+
+const getVariables = (selectedOption: dashboardKeysType, id: string) => {
+  const variables = {
+    vehicles: { id },
+    parking: { id },
+    users: { id },
+    vehicleTypes: { input: { _id: id } },
+  };
+  return variables[selectedOption];
+};
 
 export interface ConfirmationModalProps {
   visible: boolean;
@@ -11,6 +36,7 @@ export interface ConfirmationModalProps {
   title: string;
   message: string;
   record?: any;
+  selectedOption: dashboardKeysType;
 }
 export const ConfirmationModal = ({
   visible,
@@ -18,21 +44,20 @@ export const ConfirmationModal = ({
   title,
   message,
   record,
+  selectedOption,
 }: ConfirmationModalProps) => {
   const [id, setId] = useState('');
-  const [deleteRegister, { error: mutationError, loading: mutationLoading }] =
-    useMutation(DELETE_VEHICLE, {
-      variables: {
-        id,
-      },
-    });
+  const mutation = getMutation(selectedOption ?? 'vehicles');
+  const [deleteRegister, { error: mutationError }] = useMutation(mutation, {
+    variables: getVariables(selectedOption ?? 'vehicles', id),
+  });
   const client = useApolloClient();
 
   const handleDelete = () => {
     deleteRegister().then(() => {
       closeModal();
       client.refetchQueries({
-        include: [GET_VEHICLES],
+        include: [getQuery(selectedOption ?? 'vehicles')],
       });
     });
   };

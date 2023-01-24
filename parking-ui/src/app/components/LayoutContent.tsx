@@ -4,7 +4,11 @@ import { FC, useState, useEffect, ReactElement } from 'react';
 import Button from './Button';
 import type { ColumnsType } from 'antd/es/table';
 import { useApolloClient, useQuery } from '@apollo/client';
-import { GET_VEHICLES_TYPES, GET_VEHICLES } from '../services/queries/';
+import {
+  GET_VEHICLES_TYPES,
+  GET_VEHICLES,
+  GET_ENTRIES,
+} from '../services/queries/';
 import { Vehicle } from '../interfaces/vehicle.interface';
 import { dashboardKeysType } from '../utils/dashboardOptions';
 import {
@@ -18,12 +22,17 @@ import {
 } from '../services/queries/getVehicleTypes';
 import { Empty } from 'antd';
 import { VehicleModal } from './Modals/VehicleModal';
+import { EntryModal } from './Modals/EntriesModal';
 import { ConfirmationModal } from './Modals/ConfirmationModal';
+import {
+  getEntriesResponse,
+  getEntriesResponseItem,
+} from 'app/services/queries/getEntries';
 
-const getQuery = (selectedOption: dashboardKeysType) => {
+export const getQuery = (selectedOption: dashboardKeysType) => {
   const queries = {
     vehicles: GET_VEHICLES,
-    parking: GET_VEHICLES,
+    parking: GET_ENTRIES,
     users: GET_VEHICLES,
     vehicleTypes: GET_VEHICLES_TYPES,
   };
@@ -73,7 +82,7 @@ const getColumns = (
     },
   ];
 
-  const parking: ColumnsType<Vehicle> = [
+  const parking: ColumnsType<getEntriesResponseItem> = [
     {
       title: 'Placa',
       dataIndex: 'plate',
@@ -83,26 +92,31 @@ const getColumns = (
       title: 'Tipo de vehículo',
       dataIndex: 'vehicleType',
       key: 'vehicleType',
+      align: 'center',
     },
     {
       title: 'Fecha de entrada',
       dataIndex: 'entryDate',
       key: 'entryDate',
+      align: 'center',
     },
     {
       title: 'Fecha de salida',
       dataIndex: 'exitDate',
       key: 'exitDate',
+      align: 'center',
     },
     {
       title: 'Valor pagado ($)',
       dataIndex: 'amountToPay',
       key: 'amountToPay',
+      align: 'right',
     },
     {
       title: 'Tiempo transcurrido',
       dataIndex: 'timeParked',
       key: 'timeParked',
+      align: 'center',
     },
   ];
 
@@ -111,16 +125,19 @@ const getColumns = (
       title: 'Tipo de vehículo',
       dataIndex: 'type',
       key: 'type',
-    },
-    {
-      title: 'Valor por minuto ($)',
-      dataIndex: 'price',
-      key: 'price',
+      align: 'center',
     },
     {
       title: 'Descripción',
       dataIndex: 'description',
       key: 'description',
+      align: 'center',
+    },
+    {
+      title: 'Valor por minuto ($)',
+      dataIndex: 'price',
+      key: 'price',
+      align: 'center',
     },
   ];
 
@@ -154,7 +171,7 @@ const getColumns = (
             openEdit(record);
           }}
         >
-          Editar
+          {selectedOption === 'parking' ? 'Registrar salida' : 'editar'}
         </Button>
       </div>
     ),
@@ -169,7 +186,7 @@ const getDataSource = (selectedOption: dashboardKeysType, data: unknown) => {
       return (data as getVehiclesResponse).vehicles?.map(
         (vehicle: getVehiclesResponseItem) => ({
           plate: vehicle.plate,
-          vehicleType: vehicle.vehicleType.description,
+          vehicleType: vehicle.vehicleType?.description,
           key: vehicle._id,
           _id: vehicle._id,
         }),
@@ -178,12 +195,39 @@ const getDataSource = (selectedOption: dashboardKeysType, data: unknown) => {
       return (data as getVehicleTypesResponse).vehicleTypes?.map(
         (vehicleType: getVehicleTypesResponseItem) => ({
           type: vehicleType.type,
-          price: vehicleType.price,
-          description: vehicleType.description,
+          price: getMoneyFormat(vehicleType?.price),
+          description: vehicleType?.description,
           key: vehicleType._id,
+          _id: vehicleType._id,
         }),
       );
+    case 'parking':
+      return (data as getEntriesResponse).entries?.map(
+        (entry: getEntriesResponseItem) => {
+          const enter = new Date(Number(entry.entryDate));
+          const exit = new Date(Number(entry.exitDate));
+          return {
+            plate: entry.plate,
+            vehicleType: entry.vehicleType,
+            entryDate: enter.toLocaleString('es-HN'),
+            entryDateEpoch: entry.entryDate,
+            exitDate: exit?.toLocaleString('es-HN'),
+            exitDateEpoch: entry.exitDate,
+            amountToPay: getMoneyFormat(entry.amountToPay),
+            timeParked: entry.timeParked + ' minutos',
+            key: entry._id,
+            _id: entry._id,
+          };
+        },
+      );
   }
+};
+
+const getMoneyFormat = (money: number) => {
+  return (money ?? 0).toLocaleString('en-US', {
+    style: 'currency',
+    currency: 'USD',
+  });
 };
 
 const getTable = ({
@@ -191,21 +235,15 @@ const getTable = ({
   selectedOption,
   openDelete,
   openEdit,
-  rowSelection,
 }: {
   selectedOption: dashboardKeysType;
   data: unknown;
-  rowSelection: {
-    selectedRowKeys: React.Key[];
-    onChange: (newSelectedRowKeys: React.Key[]) => void;
-  };
   openEdit: any;
   openDelete: any;
 }) => {
   const tableProps = {
     scroll: { x: 1000 },
     bordered: true,
-    rowSelection,
     showHeader: true,
   };
 
@@ -239,22 +277,12 @@ interface props {
 }
 export const LayoutContent: FC<props> = ({ selectedOption }: props) => {
   const [actualQuery, setActualQuery] = useState(getQuery(selectedOption));
-  const [selectedRowKeys, setSelectedRowKeys] = useState<React.Key[]>([]);
   const { data, loading } = useQuery(actualQuery);
-  const [openVehicleModal, setOpenVehicleModal] = useState(false);
+  const [openVehicleModal, setOpenModal] = useState(false);
   const [confirmationModal, setConfirmationModal] = useState(false);
 
   const [record, setRecord] = useState<any>(null);
   const client = useApolloClient();
-
-  const onSelectChange = (newSelectedRowKeys: React.Key[]) => {
-    setSelectedRowKeys(newSelectedRowKeys);
-  };
-
-  const rowSelection = {
-    selectedRowKeys,
-    onChange: onSelectChange,
-  };
 
   const handleRefresh = () => {
     client.refetchQueries({
@@ -264,7 +292,7 @@ export const LayoutContent: FC<props> = ({ selectedOption }: props) => {
 
   const openEdit = (record: any) => {
     setRecord(record);
-    setOpenVehicleModal(true);
+    setOpenModal(true);
   };
 
   const openDelete = (record: any) => {
@@ -282,7 +310,7 @@ export const LayoutContent: FC<props> = ({ selectedOption }: props) => {
 
   return (
     <Content className="bg-white rounded-lg sm:px-12 flex flex-col">
-      <div className="flex flex-col my-4 md:flex-row justify-around items-center space-y-4">
+      <div className="flex flex-col my-4 md:flex-row justify-around items-center">
         <Button
           extraClassName="w-2/3 md:w-1/4"
           styleButton="normal"
@@ -292,18 +320,7 @@ export const LayoutContent: FC<props> = ({ selectedOption }: props) => {
         >
           Refrescar
         </Button>
-        {selectedOption === 'parking' && (
-          <Button
-            extraClassName="w-2/3 md:w-1/4"
-            styleButton="secondary"
-            onClick={() => {
-              //openCreateModal("exit");
-            }}
-          >
-            Registrar salida
-          </Button>
-        )}
-        {getButton(selectedOption, setOpenVehicleModal)}
+        {getButton(selectedOption, setOpenModal)}
       </div>
       <div className="flex w-full overflow-hidden self-center">
         {loading && <p>Loading...</p>}
@@ -312,20 +329,32 @@ export const LayoutContent: FC<props> = ({ selectedOption }: props) => {
           getTable({
             selectedOption,
             data,
-            rowSelection,
             openEdit,
             openDelete,
           })}
       </div>
-      <VehicleModal
-        visible={openVehicleModal}
-        closeModal={() => {
-          setOpenVehicleModal(false);
-          setRecord(null);
-        }}
-        initialValues={record}
-        isEdit={!!record}
-      />
+      {selectedOption === 'vehicles' && (
+        <VehicleModal
+          visible={openVehicleModal}
+          closeModal={() => {
+            setOpenModal(false);
+            setRecord(null);
+          }}
+          initialValues={record}
+          isEdit={!!record}
+        />
+      )}
+      {selectedOption === 'parking' && (
+        <EntryModal
+          visible={openVehicleModal}
+          closeModal={() => {
+            setOpenModal(false);
+            setRecord(null);
+          }}
+          initialValues={record}
+          isEdit={!!record}
+        />
+      )}
       <ConfirmationModal
         title="Confirmar eliminación"
         message="¿Está seguro que desea eliminar este registro?"
@@ -335,6 +364,7 @@ export const LayoutContent: FC<props> = ({ selectedOption }: props) => {
         }}
         visible={confirmationModal}
         record={record}
+        selectedOption={selectedOption}
       />
     </Content>
   );

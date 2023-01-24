@@ -48,8 +48,12 @@ class VehicleService {
 
   async findVehicleType(vehicleTypeId: string) {
     return (
-      VehicleTypeModel.findOne({ _id: vehicleTypeId, isActive: true }).lean()
-        ?.name || 'default'
+      (
+        await VehicleTypeModel.findOne({
+          _id: vehicleTypeId,
+          isActive: true,
+        }).lean()
+      )?.type || 'default'
     );
   }
 

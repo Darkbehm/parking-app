@@ -19,7 +19,7 @@ class EntryService {
 
     const vehicleType = vehicleTypeId
       ? await vehicleService.findVehicleType(vehicleTypeId.toString())
-      : 'default';
+      : 'normal';
 
     const newEntry = {
       ...input,
@@ -32,7 +32,11 @@ class EntryService {
   }
 
   async findEntries() {
-    const entries = (await EntryModel.find().lean())?.map((entry) => {
+    const entries = (
+      await EntryModel.find({
+        isActive: true,
+      }).lean()
+    )?.map((entry) => {
       const { _id, ...rest } = entry;
       return {
         _id: _id.toString(),

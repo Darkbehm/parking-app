@@ -129,9 +129,7 @@ export const VehicleModal = ({
         }}
       >
         <div className="flex flex-row justify-between items-center">
-          <div
-            className="font-semibold bg-gradient-to-r from-sky-500 to-teal-300 text-transparent bg-clip-text select-none text-md md:text-lg"
-          >
+          <div className="font-semibold bg-gradient-to-r from-sky-500 to-teal-300 text-transparent bg-clip-text select-none text-md md:text-lg">
             Placa del vehículo:
           </div>
           <Form.Item
@@ -169,9 +167,7 @@ export const VehicleModal = ({
           </Form.Item>
         </div>
         <div className="flex flex-row justify-between items-center">
-          <div
-            className="font-semibold bg-gradient-to-r from-sky-500 to-teal-300 text-transparent bg-clip-text select-none text-md md:text-lg"
-          >
+          <div className="font-semibold bg-gradient-to-r from-sky-500 to-teal-300 text-transparent bg-clip-text select-none text-md md:text-lg">
             Tipo de vehículo:
           </div>
           <Form.Item

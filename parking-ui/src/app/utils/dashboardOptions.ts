@@ -10,7 +10,7 @@ export type dashboardKeysType = typeof dashboardKeys[number];
 export type dashboardOptionsType = {
   key: dashboardKeysType;
   name: string;
-  role: 'admin' | 'any';
+  role: 'admin' | 'any' | 'none';
 };
 
 export const dashboardOptions: dashboardOptionsType[] = [
@@ -32,6 +32,6 @@ export const dashboardOptions: dashboardOptionsType[] = [
   {
     key: 'users',
     name: 'Usuarios',
-    role: 'admin',
+    role: 'none',
   },
 ];
