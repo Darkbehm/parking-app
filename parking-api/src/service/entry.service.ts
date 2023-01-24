@@ -5,7 +5,7 @@ import {
   EntryModel,
   GetEntryInput,
   UpdateEntryInput,
-} from '../schema/Entry.schema';
+} from '../schema/entry.schema';
 import VehicleService from './vehicle.service';
 
 import { VehicleTypeModel } from '../schema/vehicleTypes.schema';
